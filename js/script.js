@@ -8,19 +8,30 @@ const GAMEBOARD = (() => {
     const BOARDFRAME = document.querySelector('#gameBoard');
 
     const RENDERBOARD = () => {
-        // let valueIndex = 0;
+        let valueIndex = 0;
         BOARDVALUES.forEach(value => {
             const CELL = document.createElement('div');
             CELL.classList.add("cell");
-            //Data attribute stored should be X or O
-            // CELL.setAttribute('data-attribute', BOARDVALUES[valueIndex]);
-            // valueIndex++;
-            // CELL.textContent = valueIndex;
+            CELL.setAttribute('data-index', valueIndex);
+            valueIndex++;
             BOARDFRAME.appendChild(CELL);
         })
     }
+//Responsible to update the array holding the values
+    const UPDATEBOARDVALUES = (sign, index) => {
+        if(BOARDVALUES[index] === "") {
+            BOARDVALUES[index] = sign;
+            console.log(BOARDVALUES);
+        } else {
+            console.log("There is already a sign here!")
+        }
+    }
+//Responsible to visually update the board based on the array values
+    const UPDATEBOARD = () => {
 
-    return {RENDERBOARD};
+    }
+
+    return {RENDERBOARD, UPDATEBOARDVALUES, UPDATEBOARD};
 
 })();
 
@@ -46,6 +57,7 @@ const GAMECONTROLLER = (() => {
 
     GAMEBOARD.RENDERBOARD();
 
+
     //2 dingen moeten gebeuren bij klik: sign van huidige player moet naar Array gepushed worden
     //Mogelijks functie updateBOARD bij GAMEBOARD toevoegen
     
@@ -53,9 +65,17 @@ const GAMECONTROLLER = (() => {
         const CELLS = document.querySelectorAll('.cell');
         CELLS.forEach(cell => {
             cell.addEventListener('click', () => {
-                const DATAVALUE = cell.setAttribute('data-attribute', currentPlayer.GETNAME());
-                cell.textContent = currentPlayer.GETSIGN();
-                console.log("Cell clicked with data value: " + currentPlayer.GETSIGN());
+                const CURRENTVALUE = cell.getAttribute('value');
+                if(CURRENTVALUE !== null) {
+                    console.log("Cell already occupied. Pick another.")
+                } else {
+                    const PLAYERSIGN = currentPlayer.GETSIGN();
+                    cell.textContent = PLAYERSIGN;
+                    cell.setAttribute('value', PLAYERSIGN);
+                    //update the array of the board
+                    const INDEX = cell.getAttribute('data-index');
+                    GAMEBOARD.UPDATEBOARDVALUES(PLAYERSIGN,INDEX);
+                }
             })
         })
     }
