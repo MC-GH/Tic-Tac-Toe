@@ -95,6 +95,7 @@ const GAMECONTROLLER = (() => {
     }
 
     const CHECKWINNER = (BOARDVALUES) => {
+        let isFull = true;
         WINNINGCOMBINATIONS.forEach(combination => {
             const [a,b,c] = combination;
             if(
@@ -106,6 +107,17 @@ const GAMECONTROLLER = (() => {
                 playing = false;
             }
         })
+
+        BOARDVALUES.forEach(value => {
+            if(value === '') {
+                isFull = false;
+            }
+        })
+
+        if(isFull) {
+            console.log("The game is a tie!");
+            playing = false;
+        }
     }
 
     GAMEBOARD.RENDERBOARD();
