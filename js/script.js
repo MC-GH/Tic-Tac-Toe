@@ -1,7 +1,3 @@
-//Modules to create: gameBoard, displayController
-//FactoryFunction to create: Player
-
-
 //GAMEBOARD Module
 const GAMEBOARD = (() => {
     const BOARDVALUES = ["","","","","","","","",""];
@@ -32,6 +28,7 @@ const GAMEBOARD = (() => {
     const UPDATEBOARD = (sign, index) => {
         const CELL = document.querySelector(`[data-index="${index}"]`);
         CELL.textContent = sign;
+        CELL.setAttribute('value', sign);
     }
 
     return {RENDERBOARD, UPDATEBOARDVALUES, UPDATEBOARD};
@@ -46,6 +43,8 @@ const PLAYER = (name, sign) => {
     return {GETNAME, GETSIGN};
 }
 
+
+
 //GAMECONTROLLER Module
 const GAMECONTROLLER = (() => {
     const PLAYERONE = PLAYER("Michaël", 'X');
@@ -53,15 +52,31 @@ const GAMECONTROLLER = (() => {
     let currentPlayer = PLAYERONE;
     let currentPlayerName = currentPlayer.GETNAME();
     let currentPlayerSign = currentPlayer.GETSIGN();
+    //To do = set playing variable when a mode is selected to true.
+    //Make it so it is unable to switch mode when active, or reset the game
     let playing = true;
+    let aiActive = true;
+    // const CELLS = document.querySelectorAll('.cell');
 
     const WINNINGCOMBINATIONS = [
         [0,1,2],[3,4,5],[6,7,8],
         [0,3,6],[1,4,7],[2,5,8],
         [0,4,8],[6,4,2]
     ]
+
+    
    
    const SETUPEVENTLISTENERS = () => {
+    const SINGLEPLAYERBUTTON = document.querySelector('#singlePlayerButton');
+    SINGLEPLAYERBUTTON.addEventListener('click', () => {
+        aiActive = true;
+    })
+
+    const MULTIPLAYERBUTTON = document.querySelector('#multiplayerButton');
+    MULTIPLAYERBUTTON.addEventListener('click', () => {
+        aiActive = false;
+    })
+
     const CELLS = document.querySelectorAll('.cell');
     CELLS.forEach(cell => {
         cell.addEventListener('click', () => {
@@ -70,17 +85,42 @@ const GAMECONTROLLER = (() => {
                 if(CURRENTVALUE !== null) {
                     console.log("Cell already occupied. Pick another.")
                 } else {
-                    console.log("Active player: " + currentPlayerName);
-                    cell.setAttribute('value', currentPlayerSign);
+                    // console.log("Active player: " + currentPlayerName);
                     //update the array of the board
                     const INDEX = cell.getAttribute('data-index');
                     GAMEBOARD.UPDATEBOARDVALUES(currentPlayerSign,INDEX);
                     SWITCHPLAYER();
                 }
+
+                if(aiActive) {
+                    console.log("Active player: " + currentPlayerName);
+                    MAKERANDOMMOVE();
+                    SWITCHPLAYER();
+                }
             }
+
         })
     })
-}
+    }
+    
+    const MAKERANDOMMOVE = () => {
+        //Fetch all empty cells, store them in an array
+        //Return a random cell => call the UPDATEBOARDVALUES function
+        const emptyCells = [];
+        const CELLS = document.querySelectorAll('.cell');
+        CELLS.forEach(cell => {
+            const VALUE = cell.getAttribute('value');
+            const INDEX = cell.getAttribute('data-index');
+            if(VALUE === null) {
+                emptyCells.push(INDEX);
+            }
+        })
+        const CHOSENINDEX = Math.floor(Math.random()*emptyCells.length);
+        GAMEBOARD.UPDATEBOARDVALUES(currentPlayerSign, emptyCells[CHOSENINDEX]);
+        
+        // cell.setAttribute('value',currentPlayerSign);
+    }
+
 
     const SWITCHPLAYER = () => {
         if(currentPlayer === PLAYERONE) {

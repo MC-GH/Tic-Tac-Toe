@@ -31,6 +31,8 @@ main {
  }
 
  .cell {
-    border: 1px solid blue
+    border: 1px solid blue;
+    font-size: 5rem;
+    text-align: center;
  }
 
