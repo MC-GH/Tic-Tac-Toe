@@ -8,6 +8,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: radial-gradient(#ecfeff,#008a9178);
 }
 
 header {

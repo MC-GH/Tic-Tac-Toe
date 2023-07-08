@@ -91,8 +91,8 @@ const GAMECONTROLLER = (() => {
                     GAMEBOARD.UPDATEBOARDVALUES(currentPlayerSign,INDEX);
                     SWITCHPLAYER();
                 }
-
-                if(aiActive) {
+                //If we are still playing (game can be won in previous move)
+                if(aiActive && playing) {
                     console.log("Active player: " + currentPlayerName);
                     MAKERANDOMMOVE();
                     SWITCHPLAYER();
@@ -154,7 +154,7 @@ const GAMECONTROLLER = (() => {
             }
         })
 
-        if(isFull) {
+        if(isFull && playing) {
             console.log("The game is a tie!");
             playing = false;
         }
