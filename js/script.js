@@ -31,7 +31,27 @@ const GAMEBOARD = (() => {
         CELL.setAttribute('value', sign);
     }
 
-    return {RENDERBOARD, UPDATEBOARDVALUES, UPDATEBOARD};
+    const RESETBOARD = () => {
+        BOARDVALUES.fill("");
+        console.log(BOARDVALUES);
+        const CELLS = document.querySelectorAll('.cell');
+        CELLS.forEach(cell => {
+            BOARDFRAME.removeChild(cell);
+        })
+        console.log(ISBOARDBLANK());
+    }
+
+    const ISBOARDBLANK = () => {
+        let isBoardBlank = true;
+        BOARDVALUES.forEach(value => {
+            if(value !== '') {
+                isBoardBlank = false;
+            }
+        })
+        return isBoardBlank;
+    } 
+
+    return {RENDERBOARD, UPDATEBOARDVALUES, UPDATEBOARD, ISBOARDBLANK, RESETBOARD};
 
 })();
 
@@ -56,26 +76,41 @@ const GAMECONTROLLER = (() => {
     //Make it so it is unable to switch mode when active, or reset the game
     let playing = true;
     let aiActive = true;
-    // const CELLS = document.querySelectorAll('.cell');
+    const WINNERTEXT = document.querySelector('#winner');
 
     const WINNINGCOMBINATIONS = [
         [0,1,2],[3,4,5],[6,7,8],
         [0,3,6],[1,4,7],[2,5,8],
         [0,4,8],[6,4,2]
     ]
-
-    
-   
+  
    const SETUPEVENTLISTENERS = () => {
     const SINGLEPLAYERBUTTON = document.querySelector('#singlePlayerButton');
     SINGLEPLAYERBUTTON.addEventListener('click', () => {
-        aiActive = true;
+        if(!playing || GAMEBOARD.ISBOARDBLANK()) {
+            aiActive = true;
+            UPDATEGAMEINFO();
+        }
     })
 
     const MULTIPLAYERBUTTON = document.querySelector('#multiplayerButton');
     MULTIPLAYERBUTTON.addEventListener('click', () => {
-        aiActive = false;
+        if(!playing || GAMEBOARD.ISBOARDBLANK()) {
+            aiActive = false;
+            UPDATEGAMEINFO();
+        }
     })
+
+    const RESETBUTTON = document.querySelector('#resetButton');
+    RESETBUTTON.addEventListener('click', () => {
+        GAMEBOARD.RESETBOARD();
+        GAMEBOARD.RENDERBOARD();
+        playing = true;
+        SETUPEVENTLISTENERS();
+        UPDATEGAMEINFO();
+        WINNERTEXT.textContent = "";
+
+    });
 
     const CELLS = document.querySelectorAll('.cell');
     CELLS.forEach(cell => {
@@ -85,10 +120,10 @@ const GAMECONTROLLER = (() => {
                 if(CURRENTVALUE !== null) {
                     console.log("Cell already occupied. Pick another.")
                 } else {
-                    // console.log("Active player: " + currentPlayerName);
                     //update the array of the board
                     const INDEX = cell.getAttribute('data-index');
                     GAMEBOARD.UPDATEBOARDVALUES(currentPlayerSign,INDEX);
+                    console.log(GAMEBOARD.ISBOARDBLANK());
                     SWITCHPLAYER();
                 }
                 //If we are still playing (game can be won in previous move)
@@ -98,7 +133,6 @@ const GAMECONTROLLER = (() => {
                     SWITCHPLAYER();
                 }
             }
-
         })
     })
     }
@@ -143,9 +177,9 @@ const GAMECONTROLLER = (() => {
                 BOARDVALUES[b] === currentPlayerSign &&
                 BOARDVALUES[c] === currentPlayerSign
             ) {
-                console.log(currentPlayerName + " wins the game!")
+                WINNERTEXT.textContent = currentPlayerName + " wins the game! Congratulations!";
                 playing = false;
-            }
+                }
         })
 
         BOARDVALUES.forEach(value => {
@@ -155,13 +189,23 @@ const GAMECONTROLLER = (() => {
         })
 
         if(isFull && playing) {
-            console.log("The game is a tie!");
+            WINNERTEXT.textContent = "The game is a tie!";
             playing = false;
+        }
+    }
+
+    const UPDATEGAMEINFO = () => {
+        const GAMEMODEINFO = document.querySelector('#mode');
+        if(aiActive) {
+            GAMEMODEINFO.textContent = "Current mode: Single Player";
+        } else {
+            GAMEMODEINFO.textContent = "Current mode: 2 Players";
         }
     }
 
     GAMEBOARD.RENDERBOARD();
     SETUPEVENTLISTENERS();
+    UPDATEGAMEINFO();
 
     return {CHECKWINNER}
 
