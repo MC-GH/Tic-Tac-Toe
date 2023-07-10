@@ -63,17 +63,13 @@ const PLAYER = (name, sign) => {
     return {GETNAME, GETSIGN};
 }
 
-
-
 //GAMECONTROLLER Module
 const GAMECONTROLLER = (() => {
-    const PLAYERONE = PLAYER("Michaël", 'X');
-    const PLAYERTWO = PLAYER("God", 'O');
-    let currentPlayer = PLAYERONE;
+    let playerOne = PLAYER("Player X", 'X');
+    let playerTwo = PLAYER("Computer", 'O');
+    let currentPlayer = playerOne;
     let currentPlayerName = currentPlayer.GETNAME();
     let currentPlayerSign = currentPlayer.GETSIGN();
-    //To do = set playing variable when a mode is selected to true.
-    //Make it so it is unable to switch mode when active, or reset the game
     let playing = true;
     let aiActive = true;
     const WINNERTEXT = document.querySelector('#winner');
@@ -83,12 +79,28 @@ const GAMECONTROLLER = (() => {
         [0,3,6],[1,4,7],[2,5,8],
         [0,4,8],[6,4,2]
     ]
+
+    const CREATEPLAYERS = () => {
+        if(aiActive) {
+            playerOne = PLAYER("Player X", 'X');
+            playerTwo = PLAYER("Computer", 'O');
+            currentPlayer = playerOne;
+
+        } else {
+            playerOne = PLAYER("Player X", 'X');
+            playerTwo = PLAYER("Player O", 'O');
+            currentPlayer = playerTwo;
+        }
+        currentPlayerName = currentPlayer.GETNAME();
+        currentPlayerSign = currentPlayer.GETSIGN();
+    }
   
    const SETUPEVENTLISTENERS = () => {
     const SINGLEPLAYERBUTTON = document.querySelector('#singlePlayerButton');
     SINGLEPLAYERBUTTON.addEventListener('click', () => {
         if(!playing || GAMEBOARD.ISBOARDBLANK()) {
             aiActive = true;
+            CREATEPLAYERS();
             UPDATEGAMEINFO();
         }
     })
@@ -97,6 +109,7 @@ const GAMECONTROLLER = (() => {
     MULTIPLAYERBUTTON.addEventListener('click', () => {
         if(!playing || GAMEBOARD.ISBOARDBLANK()) {
             aiActive = false;
+            CREATEPLAYERS();
             UPDATEGAMEINFO();
         }
     })
@@ -106,6 +119,7 @@ const GAMECONTROLLER = (() => {
         GAMEBOARD.RESETBOARD();
         GAMEBOARD.RENDERBOARD();
         playing = true;
+        CREATEPLAYERS();
         SETUPEVENTLISTENERS();
         UPDATEGAMEINFO();
         WINNERTEXT.textContent = "";
@@ -118,7 +132,8 @@ const GAMECONTROLLER = (() => {
             if(playing) {
                 const CURRENTVALUE = cell.getAttribute('value');
                 if(CURRENTVALUE !== null) {
-                    console.log("Cell already occupied. Pick another.")
+                    console.log("Cell already occupied. Pick another.");
+                    return;
                 } else {
                     //update the array of the board
                     const INDEX = cell.getAttribute('data-index');
@@ -151,18 +166,16 @@ const GAMECONTROLLER = (() => {
         })
         const CHOSENINDEX = Math.floor(Math.random()*emptyCells.length);
         GAMEBOARD.UPDATEBOARDVALUES(currentPlayerSign, emptyCells[CHOSENINDEX]);
-        
-        // cell.setAttribute('value',currentPlayerSign);
     }
 
 
     const SWITCHPLAYER = () => {
-        if(currentPlayer === PLAYERONE) {
-            currentPlayer = PLAYERTWO;
+        if(currentPlayer === playerOne) {
+            currentPlayer = playerTwo;
             currentPlayerName = currentPlayer.GETNAME();
             currentPlayerSign = currentPlayer.GETSIGN();
         } else {
-            currentPlayer = PLAYERONE;
+            currentPlayer = playerOne;
             currentPlayerName = currentPlayer.GETNAME();
             currentPlayerSign = currentPlayer.GETSIGN();
         }

@@ -16,6 +16,10 @@ header {
     padding-top: 3rem;
 }
 
+#winner {
+    height: 18.4px;
+}
+
 main {
     flex: 1;
     display: flex;
@@ -24,16 +28,32 @@ main {
 }
 
  #gameBoard {
-    border: 2px solid black;
+    border: 3px solid black;
+    border-radius: 5px;
     display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(3, 200px);
     justify-content: center;
+    background-color: rgba(128, 128, 128, 0.392);
  }
 
  .cell {
-    border: 1px solid blue;
-    font-size: 5rem;
+    border: 1px solid rgba(0, 136, 255, 0.856);
+    font-size: 10rem;
     text-align: center;
  }
 
+ .cell:hover {
+    background-color: rgba(128, 128, 128, 0.655);
+ }
+
+@media only screen and (max-width: 600px) {
+    #gameBoard {
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+    }
+
+    .cell {
+        font-size: 5rem;
+    }
+}
